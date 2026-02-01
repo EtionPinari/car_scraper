@@ -90,11 +90,25 @@ if df is not None:
 
     title_counts = df['title'].value_counts()
     common_titles = title_counts[title_counts > 1].index.tolist()
+    st.sidebar.header("Filter Models")
 
-    st.sidebar.header("Filter by Common Models")
-    for title in common_titles:
+    # 1. Search input field
+    search_query = st.sidebar.text_input("🔍 Search model name", "").lower()
+
+    # 2. Filter titles based on search
+    if search_query:
+        filtered_titles = [t for t in common_titles if search_query in t.lower()]
+    else:
+        filtered_titles = common_titles
+
+    # 3. Display the (filtered) buttons
+    for title in filtered_titles:
         if st.sidebar.button(f"{title} ({title_counts[title]} hits)"):
             st.session_state.selected_title = title
+
+    # Optional: Message if nothing matches
+    if search_query and not filtered_titles:
+        st.sidebar.write("No models found.")
 
     if st.session_state.selected_title:
         selected_title = st.session_state.selected_title
